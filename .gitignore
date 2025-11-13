@@ -1,0 +1,4 @@
+raylibTest.c
+*.exe
+*.txt
+.vscode/
