@@ -71,5 +71,5 @@ The system was tested on multiple scenarios including:
 
 ## Author
 
-**Talha Yousuf**
+**Talha Yousuf**,
 **Aryaan Taimur**
