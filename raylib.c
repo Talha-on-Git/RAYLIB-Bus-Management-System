@@ -435,7 +435,8 @@ void DrawSeatAvailability()
 {
     DrawText("Seat Availability", 50, 20, 20, BLACK);
 
-    const char *buses[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
+    const char *busDisplay[MAX_BUSES] = {"Green Bus", "Blue Bus", "Red Bus", "Yellow Bus"};
+    const char *busInternal[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
     Rectangle busButtons[MAX_BUSES] = {{50, 50, 100, 30}, {160, 50, 100, 30}, {270, 50, 100, 30}, {380, 50, 100, 30}};
 
     for (int i = 0; i < 4; i++)
@@ -443,15 +444,15 @@ void DrawSeatAvailability()
         bool hovered = CheckCollisionPointRec(GetMousePosition(), busButtons[i]);
         DrawRectangleRounded(busButtons[i], 0.2f, 10, hovered ? BLUE : WHITE);
         DrawRectangleRoundedLines(busButtons[i], 0.2f, 10, 1, BLUE);
-        int tw = MeasureText(buses[i], 14);
-        DrawText(buses[i], busButtons[i].x + (busButtons[i].width - tw) / 2, busButtons[i].y + 8, 14, BLACK);
+        int tw = MeasureText(busDisplay[i], 14);
+        DrawText(busDisplay[i], busButtons[i].x + (busButtons[i].width - tw) / 2, busButtons[i].y + 8, 14, BLACK);
 
         if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            strcpy(selectedBus, buses[i]);
+            strcpy(selectedBus, busInternal[i]);
     }
 
     if (strlen(selectedBus) == 0)
-    strcpy(selectedBus, "Green");
+        strcpy(selectedBus, "Green");
 
     int bIndex = -1;
     for (int i = 0; i < busCount; i++)
@@ -482,42 +483,32 @@ void DrawSeatAvailability()
 void DrawBookSeat()
 {
     DrawText("Book a Seat", 50, 20, 20, BLACK);
-
-    const char *buses[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
+    const char *busDisplay[MAX_BUSES] = {"Green Bus", "Blue Bus", "Red Bus", "Yellow Bus"};
+    const char *busInternal[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
     Rectangle busButtons[MAX_BUSES] = {{50, 50, 100, 30}, {160, 50, 100, 30}, {270, 50, 100, 30}, {380, 50, 100, 30}};
-
     for (int i = 0; i < 4; i++)
     {
         bool hovered = CheckCollisionPointRec(GetMousePosition(), busButtons[i]);
         DrawRectangleRounded(busButtons[i], 0.2f, 10, hovered ? BLUE : WHITE);
         DrawRectangleRoundedLines(busButtons[i], 0.2f, 10, 1, BLUE);
-        int tw = MeasureText(buses[i], 14);
-        DrawText(buses[i], busButtons[i].x + (busButtons[i].width - tw) / 2, busButtons[i].y + 8, 14, BLACK);
-
+        int tw = MeasureText(busDisplay[i], 14);
+        DrawText(busDisplay[i], busButtons[i].x + (busButtons[i].width - tw) / 2, busButtons[i].y + 8, 14, BLACK);
         if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            strcpy(selectedBus, buses[i]);
+            strcpy(selectedBus, busInternal[i]);
     }
-
     if (strlen(selectedBus) == 0)
-    strcpy(selectedBus, "Green");
-
+        strcpy(selectedBus, "Green");
     int bIndex = -1;
     for (int i = 0; i < busCount; i++)
         if (strcmp(busList[i].bus, selectedBus) == 0)
             bIndex = i;
-
     if (bIndex != -1)
     {
         for (int i = 0; i < SEATS_PER_BUS; i++)
         {
             Color c = busSeats[bIndex][i].booked ? RED : GREEN;
             DrawRectangleRec(busSeats[bIndex][i].rect, c);
-            DrawText(TextFormat("%d", busSeats[bIndex][i].seatNum),
-                     busSeats[bIndex][i].rect.x + 15,
-                     busSeats[bIndex][i].rect.y + 15,
-                     20,
-                     BLACK);
-
+            DrawText(TextFormat("%d", busSeats[bIndex][i].seatNum), busSeats[bIndex][i].rect.x + 15, busSeats[bIndex][i].rect.y + 15, 20, BLACK);
             if (!busSeats[bIndex][i].booked && CheckCollisionPointRec(GetMousePosition(), busSeats[bIndex][i].rect))
             {
                 DrawRectangleLinesEx(busSeats[bIndex][i].rect, 3, YELLOW);
@@ -530,7 +521,6 @@ void DrawBookSeat()
             }
         }
     }
-
     DrawText("Click GREEN seat to book", 50, 500, 16, GRAY);
     DrawText("Press BACKSPACE to return", 50, 520, 16, GRAY);
     if (IsKeyPressed(KEY_BACKSPACE))
@@ -542,42 +532,39 @@ void DrawTimeSchedule()
 {
     DrawText("Bus Time Schedules", 50, 20, 24, BLACK);
 
-    static char selectedBus[20] = "Green";
-    const char* buses[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
+    const char *busDisplay[MAX_BUSES] = {"Green Bus", "Blue Bus", "Red Bus", "Yellow Bus"};
+    const char *busInternal[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
     Rectangle busButtons[MAX_BUSES] = {
         {50, 60, 100, 30},
         {160, 60, 100, 30},
         {270, 60, 100, 30},
-        {380, 60, 100, 30}
-    };
+        {380, 60, 100, 30}};
 
-    for(int i = 0; i < 4; i++)
+    static char selectedBus[20] = "Green";
+
+    for (int i = 0; i < 4; i++)
     {
         bool hovered = CheckCollisionPointRec(GetMousePosition(), busButtons[i]);
         DrawRectangleRounded(busButtons[i], 0.2f, 10, hovered ? BLUE : WHITE);
         DrawRectangleRoundedLines(busButtons[i], 0.2f, 10, 1, BLUE);
-
-        int tw = MeasureText(buses[i], 14);
-        DrawText(buses[i], busButtons[i].x + (busButtons[i].width - tw)/2,
+        int tw = MeasureText(busDisplay[i], 14);
+        DrawText(busDisplay[i], busButtons[i].x + (busButtons[i].width - tw) / 2,
                  busButtons[i].y + 5, 14, BLACK);
 
-        if(hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            strcpy(selectedBus, buses[i]);
+        if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
+            strcpy(selectedBus, busInternal[i]);
     }
 
     char morning[256] = "";
     char evening[256] = "";
-
     FILE *file = fopen("schedules.txt", "r");
-    if(file)
+    if (file)
     {
         char line[256];
-
-        while(fgets(line, sizeof(line), file))
+        while (fgets(line, sizeof(line), file))
         {
             line[strcspn(line, "\n")] = 0;
-
-            if(strcmp(line, TextFormat("%s:", selectedBus)) == 0)
+            if (strcmp(line, TextFormat("%s:", selectedBus)) == 0)
             {
                 fgets(line, sizeof(line), file);
                 line[strcspn(line, "\n")] = 0;
@@ -590,7 +577,6 @@ void DrawTimeSchedule()
                 break;
             }
         }
-
         fclose(file);
     }
     else
@@ -603,41 +589,42 @@ void DrawTimeSchedule()
     int yMorning = 200;
     int yEvening = 350;
 
-    DrawText("Morning:", 100, yMorning - 40, 20, BLACK);
+    DrawText("Morning(-->):", 100, yMorning - 40, 20, BLACK);
     DrawLine(100, yMorning, 700, yMorning, DARKGRAY);
 
-    char* token = strtok(morning, ",");
+    char *token = strtok(morning, ",");
     int index = 0;
-
-    while(token && index < 5)
+    while (token && index < 5)
     {
         DrawCircle(stopsX[index], yMorning, 15, BLUE);
-        DrawText(TextFormat("%s", token),
-                 stopsX[index] - 40, yMorning + 20,
-                 14, BLACK);
+        DrawText(TextFormat("%d", index + 1), stopsX[index] - 6, yMorning - 7, 12, WHITE);
+        DrawText(TextFormat("%s", token), stopsX[index] - 40, yMorning + 20, 14, BLACK);
 
         token = strtok(NULL, ",");
         index++;
     }
 
-    DrawText("Evening:", 100, yEvening - 40, 20, BLACK);
+    DrawCircle(stopsX[4] + 40, yMorning, 40, BLUE);
+    DrawText("FAST->", stopsX[4] + 20, yMorning - 7, 14, WHITE);
+
+    DrawText("Evening(<--):", 100, yEvening - 40, 20, BLACK);
     DrawLine(100, yEvening, 700, yEvening, DARKGRAY);
 
     token = strtok(evening, ",");
     index = 0;
-
-    while(token && index < 5)
+    while (token && index < 5)
     {
         DrawCircle(stopsX[index], yEvening, 15, RED);
-        DrawText(TextFormat("%s", token),
-                 stopsX[index] - 40, yEvening + 20,
-                 14, BLACK);
+        DrawText(TextFormat("%d", index + 1), stopsX[index] - 6, yEvening - 7, 12, WHITE);
+        DrawText(TextFormat("%s", token), stopsX[index] - 40, yEvening + 20, 14, BLACK);
 
         token = strtok(NULL, ",");
         index++;
     }
+    DrawCircle(stopsX[4] + 40, yEvening, 40, RED);
+    DrawText("<- FAST", stopsX[4] + 20, yEvening - 7, 14, WHITE);
 
     DrawText("Press BACKSPACE to return", 50, 520, 16, GRAY);
-    if(IsKeyPressed(KEY_BACKSPACE)) currentScreen = SCREEN_MAIN;
+    if (IsKeyPressed(KEY_BACKSPACE))
+        currentScreen = SCREEN_MAIN;
 }
-
