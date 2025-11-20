@@ -479,13 +479,21 @@ void DrawSeatAvailability()
         currentScreen = SCREEN_MAIN;
 }
 
+
 // ===================== BOOK SEAT =====================
 void DrawBookSeat()
 {
     DrawText("Book a Seat", 50, 20, 20, BLACK);
+
     const char *busDisplay[MAX_BUSES] = {"Green Bus", "Blue Bus", "Red Bus", "Yellow Bus"};
     const char *busInternal[MAX_BUSES] = {"Green", "Blue", "Red", "Yellow"};
     Rectangle busButtons[MAX_BUSES] = {{50, 50, 100, 30}, {160, 50, 100, 30}, {270, 50, 100, 30}, {380, 50, 100, 30}};
+
+    static bool seatBooked = false;       
+    static char bookedMsg[80] = "";         
+    static int bookedSeat = 0;                
+    static char bookedBus[20] = "";           
+
     for (int i = 0; i < 4; i++)
     {
         bool hovered = CheckCollisionPointRec(GetMousePosition(), busButtons[i]);
@@ -493,23 +501,32 @@ void DrawBookSeat()
         DrawRectangleRoundedLines(busButtons[i], 0.2f, 10, 1, BLUE);
         int tw = MeasureText(busDisplay[i], 14);
         DrawText(busDisplay[i], busButtons[i].x + (busButtons[i].width - tw) / 2, busButtons[i].y + 8, 14, BLACK);
+
         if (hovered && IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
             strcpy(selectedBus, busInternal[i]);
     }
+
     if (strlen(selectedBus) == 0)
         strcpy(selectedBus, "Green");
+
     int bIndex = -1;
     for (int i = 0; i < busCount; i++)
         if (strcmp(busList[i].bus, selectedBus) == 0)
             bIndex = i;
+
     if (bIndex != -1)
     {
         for (int i = 0; i < SEATS_PER_BUS; i++)
         {
             Color c = busSeats[bIndex][i].booked ? RED : GREEN;
             DrawRectangleRec(busSeats[bIndex][i].rect, c);
-            DrawText(TextFormat("%d", busSeats[bIndex][i].seatNum), busSeats[bIndex][i].rect.x + 15, busSeats[bIndex][i].rect.y + 15, 20, BLACK);
-            if (!busSeats[bIndex][i].booked && CheckCollisionPointRec(GetMousePosition(), busSeats[bIndex][i].rect))
+            DrawText(TextFormat("%d", busSeats[bIndex][i].seatNum),
+                     busSeats[bIndex][i].rect.x + 15,
+                     busSeats[bIndex][i].rect.y + 15,
+                     20,
+                     BLACK);
+
+            if (!seatBooked && !busSeats[bIndex][i].booked && CheckCollisionPointRec(GetMousePosition(), busSeats[bIndex][i].rect))
             {
                 DrawRectangleLinesEx(busSeats[bIndex][i].rect, 3, YELLOW);
                 if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
@@ -517,14 +534,26 @@ void DrawBookSeat()
                     busSeats[bIndex][i].booked = true;
                     busList[bIndex].seats--;
                     SaveBuses();
+
+                    seatBooked = true; 
+                    bookedSeat = busSeats[bIndex][i].seatNum;
+                    strcpy(bookedBus, selectedBus);
+                    snprintf(bookedMsg, sizeof(bookedMsg), "You booked seat %d in %s Bus.. You cannot book any more seats!", bookedSeat, bookedBus);
                 }
             }
         }
     }
-    DrawText("Click GREEN seat to book", 50, 500, 16, GRAY);
-    DrawText("Press BACKSPACE to return", 50, 520, 16, GRAY);
+
+    DrawText("Click GREEN seat to book", 50, 510, 16, GRAY);
+    DrawText("Press BACKSPACE to return", 50, 530, 16, GRAY);
+
+    if (seatBooked)
+        DrawText(bookedMsg, 50, 480, 20, DARKGREEN);
+
     if (IsKeyPressed(KEY_BACKSPACE))
+    {
         currentScreen = SCREEN_MAIN;
+    }
 }
 
 // ===================== TIME SCHEDULE =====================
@@ -538,7 +567,8 @@ void DrawTimeSchedule()
         {50, 60, 100, 30},
         {160, 60, 100, 30},
         {270, 60, 100, 30},
-        {380, 60, 100, 30}};
+        {380, 60, 100, 30}
+    };
 
     static char selectedBus[20] = "Green";
 
@@ -603,7 +633,7 @@ void DrawTimeSchedule()
         token = strtok(NULL, ",");
         index++;
     }
-
+    
     DrawCircle(stopsX[4] + 40, yMorning, 40, BLUE);
     DrawText("FAST->", stopsX[4] + 20, yMorning - 7, 14, WHITE);
 
